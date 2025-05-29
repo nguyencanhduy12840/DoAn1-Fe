@@ -397,7 +397,7 @@ export default function OrderTicket() {
           phoneNumber={selectedOrder.userEntity.phoneNumber}
           address={selectedOrder.userEntity.address}
           totalPrice={selectedOrder.total}
-          voucher={selectedOrder.voucherEntity}
+          voucher={selectedOrder?.voucherEntity}
           products={selectedOrder.saleTicketDetails}
         />
       )}

@@ -56,6 +56,26 @@ const getSaleTicketById = (id: string) => {
 const getImportTicketById = (id: string) => {
   return axios.get<ImportTicket>(`/importtickets/${id}`);
 };
+
+const saveInventory = (month: number, year: number) => {
+  const formData = new FormData();
+  formData.append("month", month.toString());
+  formData.append("year", year.toString());
+  return axios.post(`/inventory`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+const getInventoryDetail = (month: number, year: number) => {
+  return axios.get(`/inventory`, {
+    params: {
+      month: month,
+      year: year,
+    },
+  });
+};
 export {
   getAllCategoriesExist,
   deleteCategory,
@@ -65,4 +85,6 @@ export {
   getSaleTicketById,
   getImportTicketById,
   getAllSupplierExist,
+  saveInventory,
+  getInventoryDetail,
 };

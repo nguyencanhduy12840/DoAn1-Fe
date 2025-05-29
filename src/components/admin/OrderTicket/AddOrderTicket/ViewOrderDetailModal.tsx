@@ -7,7 +7,7 @@ interface ViewOrderDetailModalProps {
   customerName: string;
   phoneNumber: string;
   address: string;
-  voucher: Voucher;
+  voucher: Voucher | undefined;
   totalPrice: number;
   products: Array<{
     id: number;
@@ -43,8 +43,15 @@ export default function ViewOrderDetailModal({
           <strong>Address:</strong> {address}
         </div>
         <div className="mb-2">
-          <strong>Voucher:</strong> {voucher.name} ( -{voucher.value}{" "}
-          {voucher.isPercentage ? "%" : "$"} )
+          <strong>Voucher:</strong>{" "}
+          {voucher ? (
+            <>
+              {voucher.name} ( -{voucher.value}
+              {voucher.isPercentage ? "%" : "$"} )
+            </>
+          ) : (
+            "None"
+          )}
         </div>
         <div className="mb-4">
           <strong>Total Price:</strong> ${totalPrice.toFixed(2)}

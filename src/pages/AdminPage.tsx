@@ -9,6 +9,7 @@ import User from "../components/admin/User/User";
 import Supplier from "../components/admin/Supplier/Supplier";
 import Voucher from "../components/admin/Voucher/Voucher";
 import Dashboard from "../components/admin/Dashboard/Dashboard";
+import InventoryTable from "../components/admin/Inventory/InventoryTable";
 
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState("Dashboard");
@@ -17,7 +18,7 @@ const AdminPage = () => {
       case "Dashboard":
         return <Dashboard />;
       case "Inventory":
-        return <div>Inventory Content</div>;
+        return <InventoryTable />;
       case "Categories":
         return <Category />;
       case "Categories Detail":
