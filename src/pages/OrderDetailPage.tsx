@@ -8,11 +8,13 @@ import { useParams } from "react-router-dom";
 
 import { getSaleTicketById } from "../services/api";
 import { OrderTicket } from "../types/OrderTicket";
+import { useAppDispatch } from "../redux/store";
+import { confirmCompleteSaleTicket } from "../redux/slice/saleTicketSlice";
 
 const OrderDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [saleTicket, setSaleTicket] = useState<OrderTicket | null>(null);
-
+  const dispatch = useAppDispatch();
   useEffect(() => {
     const fetchTicket = async () => {
       try {
@@ -45,11 +47,21 @@ const OrderDetailPage = () => {
     saleTicket ? (saleTicket as OrderTicket).status : ""
   );
 
-  const handleCompleteClick = () => setDialogOpen(true);
-  //   const handleDialogClose = (confirmed: boolean) => {
-  //     setDialogOpen(false);
-  //     if (confirmed) updateSaleTicketStatus(saleTicket.id, "COMPLETED");
-  //   };
+  const handleConfirmComplete = async () => {
+    if (!saleTicket) return;
+    try {
+      const actionResult = await dispatch(
+        confirmCompleteSaleTicket(saleTicket.id)
+      );
+      if (confirmCompleteSaleTicket.fulfilled.match(actionResult)) {
+        setSaleTicket({ ...saleTicket, status: "COMPLETED" }); // cập nhật trạng thái tại local state
+      }
+    } catch (error) {
+      console.error("Failed to confirm completion:", error);
+    } finally {
+      setDialogOpen(false);
+    }
+  };
 
   const baseURL = "http://localhost:8080";
   if (!saleTicket) {
@@ -173,7 +185,7 @@ const OrderDetailPage = () => {
             <div className="flex justify-center mt-6">
               <button
                 className="btn btn-primary btn-lg rounded-full px-8 shadow-lg text-lg font-bold"
-                onClick={handleCompleteClick}
+                onClick={() => setDialogOpen(true)}
               >
                 Confirm Completed
               </button>
@@ -182,28 +194,36 @@ const OrderDetailPage = () => {
 
           {/* Confirmation Dialog */}
           {isDialogOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="bg-white p-6 rounded-xl w-96 shadow-xl">
-                <h3 className="text-lg font-bold mb-4">Confirm Completion</h3>
-                <p className="mb-6">
-                  Are you sure you want to mark this order as completed?
-                </p>
-                <div className="flex justify-end gap-4">
-                  <button
-                    className="btn"
-                    // onClick={() => handleDialogClose(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="btn btn-primary"
-                    // onClick={() => handleDialogClose(true)}
-                  >
-                    Confirm
-                  </button>
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                style={{ backgroundColor: "transparent" }}
+                onClick={() => setDialogOpen(false)}
+              />
+
+              <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+                <div className="bg-white p-6 rounded-xl w-96 shadow-xl border border-gray-300 pointer-events-auto">
+                  <h3 className="text-lg font-bold mb-4">Confirm Completion</h3>
+                  <p className="mb-6">
+                    Are you sure you want to mark this order as completed?
+                  </p>
+                  <div className="flex justify-end gap-4">
+                    <button
+                      className="btn"
+                      onClick={() => setDialogOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={handleConfirmComplete}
+                    >
+                      Confirm
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </main>
