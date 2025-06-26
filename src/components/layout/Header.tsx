@@ -1,6 +1,6 @@
 import { FaUser, FaShoppingCart } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { RootState, useAppDispatch } from "../../redux/store";
+import { persistor, RootState, useAppDispatch } from "../../redux/store";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
@@ -170,6 +170,11 @@ export default function Header() {
                           onClick={async () => {
                             try {
                               await dispatch(logoutUser()); // gọi API xóa cookie
+                              localStorage.removeItem("access_token");
+                              localStorage.removeItem("refresh_token");
+                              localStorage.removeItem("persist:user"); // XÓA dữ liệu redux-persist
+
+                              persistor.purge(); // XÓA cache redux-persist trong bộ nhớ
                             } catch (error) {
                               console.error("Logout failed:", error);
                             } finally {
