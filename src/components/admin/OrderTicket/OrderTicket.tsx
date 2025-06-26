@@ -21,7 +21,7 @@ export default function OrderTicket() {
   const [isViewDetailModalOpen, setIsViewDetailModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<OrderTicketType>();
   const [page, setPage] = useState(1);
-  const size = 2;
+  const size = 3;
   const orders = useSelector(
     (state: RootState) => state.saleTicket.listSaleTicket
   );
@@ -64,7 +64,7 @@ export default function OrderTicket() {
 
       pdf.setFont("times", "bold");
       pdf.setFontSize(16);
-      pdf.text("BEAUTIFY", 50, 40);
+      pdf.text("FLOWERSHOP", 50, 40);
       pdf.setFont("times", "normal");
       pdf.setFontSize(12);
       pdf.text(
@@ -72,7 +72,7 @@ export default function OrderTicket() {
         50,
         55
       );
-      pdf.text("Phone: (123) 456-7890 | Email: beautify@gmail.com", 50, 70);
+      pdf.text("Phone: (123) 456-7890 | Email: flowershop@gmail.com", 50, 70);
       pdf.setFont("times", "bold");
       pdf.setFontSize(18);
       pdf.text("SALE TICKET DETAIL", pageWidth - 100, 40, {
@@ -190,7 +190,7 @@ export default function OrderTicket() {
         lastTableY + (deliveryFee > 0 ? 75 : 55)
       );
       pdf.text(
-        "If you have any questions, please contact us at beautify@gmail.com.",
+        "If you have any questions, please contact us at flowershop@gmail.com.",
         50,
         lastTableY + (deliveryFee > 0 ? 90 : 70)
       );

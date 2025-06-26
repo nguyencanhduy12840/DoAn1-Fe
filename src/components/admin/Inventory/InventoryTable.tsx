@@ -12,7 +12,9 @@ const InventoryTable = () => {
   });
 
   interface InventoryItem {
-    productName: string;
+    productEntity: {
+      name: string;
+    };
     beginningInventory: number;
     totalImported: number;
     totalSold: number;
@@ -39,7 +41,7 @@ const InventoryTable = () => {
     try {
       const [year, month] = selectedDate.split("-");
       const res = await saveInventory(+month, +year);
-      console.log(res);
+      console.log(res.data.details);
       setInventory(res.data.details);
     } catch (error) {
       console.error("Error fetching inventory:", error);
@@ -61,7 +63,7 @@ const InventoryTable = () => {
 
     worksheet.mergeCells("A1:F1");
     const titleCell = worksheet.getCell("A1");
-    titleCell.value = "Beautify";
+    titleCell.value = "FLOWERSHOP";
     titleCell.font = { bold: true, size: 18, color: { argb: "FF0000" } };
     titleCell.alignment = { horizontal: "center", vertical: "middle" };
     titleCell.fill = {
@@ -123,7 +125,7 @@ const InventoryTable = () => {
       const dataRow = worksheet.getRow(rowIndex);
       dataRow.values = [
         index + 1,
-        row.productName,
+        row.productEntity.name,
         row.beginningInventory,
         row.totalImported,
         row.totalSold,
@@ -229,7 +231,7 @@ const InventoryTable = () => {
             {currentItems.map((item, index) => (
               <tr key={index}>
                 <td className="text-center">{indexOfFirstItem + index + 1}</td>
-                <td>{item.productName}</td>
+                <td>{item.productEntity.name}</td>
                 <td className="text-center">{item.beginningInventory}</td>
                 <td className="text-center">{item.totalImported}</td>
                 <td className="text-center">{item.totalSold}</td>

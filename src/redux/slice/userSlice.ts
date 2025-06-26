@@ -10,20 +10,27 @@ interface UserState {
   listUsers: User[];
   pages: number;
   total: number;
+  refreshToken: string;
+  accessToken: string;
 }
 const initialState: UserState = {
   user: {
     id: "",
     username: "",
-    role: "",
+    roleEntity: {
+      id: "",
+      name: "",
+      description: "",
+    },
     fullName: "",
     image: "",
     address: "",
     gender: "",
     birthday: "",
     phoneNumber: "",
-    refresh_token: "",
   },
+  refreshToken: "",
+  accessToken: "",
   isAuthenticated: false,
   listUsers: [],
   pages: 0,
@@ -82,7 +89,7 @@ export const changeUserPassword = createAsyncThunk(
 export const login = createAsyncThunk(
   "user/login",
   async (body: UserLogin, thunkApi) => {
-    const response = await axios.post<{ user: User; access_token: string }>(
+    const response = await axios.post<{ user: User; accessToken: string }>(
       "auth/login",
       body,
       {
@@ -128,15 +135,20 @@ const userSlice = createSlice({
       state.user = {
         id: "",
         username: "",
-        role: "",
+        roleEntity: {
+          id: "",
+          name: "",
+          description: "",
+        },
         fullName: "",
         image: "",
         address: "",
         gender: "",
         birthday: "",
         phoneNumber: "",
-        refresh_token: "",
       };
+      state.refreshToken = "";
+      state.accessToken = "";
       state.isAuthenticated = false;
       localStorage.removeItem("access_token");
     },
@@ -149,21 +161,25 @@ const userSlice = createSlice({
           state,
           action: PayloadAction<{
             user: User;
-            access_token: string;
+            accessToken: string;
+            refreshToken?: string;
           }>
         ) => {
-          state.user.id = action.payload.user.id;
-          state.user.username = action.payload.user.username;
-          state.user.role = action.payload.user.role;
-          state.user.fullName = action.payload.user.fullName;
-          state.user.image = action.payload.user.image;
-          state.user.address = action.payload.user.address;
-          state.user.birthday = action.payload.user.birthday;
-          state.user.gender = action.payload.user.gender;
-          state.user.phoneNumber = action.payload.user.phoneNumber;
-          state.user.refresh_token = action.payload.access_token;
+          const { user, accessToken, refreshToken } = action.payload;
+          console.log("✅ accessToken:", accessToken);
+          console.log("✅ refreshToken:", refreshToken);
+          console.log("✅ user:", user);
+          state.user = {
+            ...user,
+          };
+          state.refreshToken = refreshToken ?? "";
+          state.accessToken = accessToken;
           state.isAuthenticated = true;
-          localStorage.setItem("access_token", action.payload.access_token);
+
+          localStorage.setItem("access_token", accessToken);
+          if (refreshToken) {
+            localStorage.setItem("refresh_token", refreshToken);
+          }
         }
       )
       .addCase(register.fulfilled, (state, action: PayloadAction<User>) => {

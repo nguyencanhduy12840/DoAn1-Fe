@@ -4,17 +4,21 @@ import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
 import { formatDateTime } from "../utils/dataUtils";
 
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { getSaleTicketById } from "../services/api";
 import { OrderTicket } from "../types/OrderTicket";
 import { useAppDispatch } from "../redux/store";
-import { confirmCompleteSaleTicket } from "../redux/slice/saleTicketSlice";
+import {
+  confirmCompleteSaleTicket,
+  deleteSaleTicket,
+} from "../redux/slice/saleTicketSlice";
 
 const OrderDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [saleTicket, setSaleTicket] = useState<OrderTicket | null>(null);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchTicket = async () => {
       try {
@@ -28,6 +32,7 @@ const OrderDetailPage = () => {
   }, [id]);
   console.log(saleTicket);
   const [isDialogOpen, setDialogOpen] = useState(false);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
   const shippingFee = 5;
   const orderPrice = saleTicket
@@ -46,6 +51,16 @@ const OrderDetailPage = () => {
   const currentStep = steps.indexOf(
     saleTicket ? (saleTicket as OrderTicket).status : ""
   );
+
+  const handleDelete = async () => {
+    if (!saleTicket?.id) return;
+    try {
+      await dispatch(deleteSaleTicket(saleTicket.id)).unwrap();
+      navigate("/orderlist");
+    } catch (error) {
+      console.error("Failed to delete and reload:", error);
+    }
+  };
 
   const handleConfirmComplete = async () => {
     if (!saleTicket) return;
@@ -192,6 +207,17 @@ const OrderDetailPage = () => {
             </div>
           )}
 
+          {saleTicket.status === "PREPARING" && (
+            <div className="flex justify-center mt-6">
+              <button
+                className="btn btn-warning btn-lg rounded-full px-8 shadow-lg text-lg font-bold"
+                onClick={() => setCancelDialogOpen(true)}
+              >
+                Cancel Order
+              </button>
+            </div>
+          )}
+
           {/* Confirmation Dialog */}
           {isDialogOpen && (
             <>
@@ -218,6 +244,36 @@ const OrderDetailPage = () => {
                       className="btn btn-primary"
                       onClick={handleConfirmComplete}
                     >
+                      Confirm
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {cancelDialogOpen && (
+            <>
+              <div
+                className="fixed inset-0 z-40"
+                style={{ backgroundColor: "transparent" }}
+                onClick={() => setDialogOpen(false)}
+              />
+
+              <div className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none">
+                <div className="bg-white p-6 rounded-xl w-96 shadow-xl border border-gray-300 pointer-events-auto">
+                  <h3 className="text-lg font-bold mb-4">Confirm Completion</h3>
+                  <p className="mb-6">
+                    Are you sure you want to cancel this order?
+                  </p>
+                  <div className="flex justify-end gap-4">
+                    <button
+                      className="btn"
+                      onClick={() => setDialogOpen(false)}
+                    >
+                      Cancel
+                    </button>
+                    <button className="btn btn-primary" onClick={handleDelete}>
                       Confirm
                     </button>
                   </div>

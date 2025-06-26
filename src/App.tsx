@@ -12,13 +12,16 @@ import OrderListPage from "./pages/OrderListPage.tsx";
 
 import OrderDetailPage from "./pages/OrderDetailPage.tsx";
 import Profile from "./pages/Profile.tsx";
+import ProtectedRoute from "./router/ProtectedRoute.tsx";
 function App() {
   return (
     <>
       <ToastContainer aria-label={undefined} />
       <Router>
         <Routes>
-          <Route path="/admin" element={<AdminPage />} />
+          <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
+            <Route path="/admin" element={<AdminPage />} />
+          </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<HomePage />} />

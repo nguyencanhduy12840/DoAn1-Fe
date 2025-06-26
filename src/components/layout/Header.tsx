@@ -19,7 +19,9 @@ export default function Header() {
     (state: RootState) => state.cart.listOrderItem
   );
   const username = useSelector((state: RootState) => state.user.user.username);
-
+  const role = useSelector(
+    (state: RootState) => state.user.user.roleEntity.name
+  );
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const toggleUserMenu = () => setShowUserMenu((prev) => !prev);
@@ -32,7 +34,9 @@ export default function Header() {
         console.log(error);
       }
     };
-    fetchAllCartItem();
+    if (username) {
+      fetchAllCartItem();
+    }
   }, [dispatch, username]);
 
   useEffect(() => {
@@ -135,14 +139,16 @@ export default function Header() {
 
                   {showUserMenu && (
                     <ul className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow-lg z-50">
-                      <li>
-                        <Link
-                          to="/admin"
-                          className="block px-4 py-2 hover:bg-pink-100 text-sm"
-                        >
-                          Admin
-                        </Link>
-                      </li>
+                      {role === "ADMIN" && (
+                        <li>
+                          <Link
+                            to="/admin"
+                            className="block px-4 py-2 hover:bg-pink-100 text-sm"
+                          >
+                            Admin
+                          </Link>
+                        </li>
+                      )}
                       <li>
                         <Link
                           to="/orderlist"

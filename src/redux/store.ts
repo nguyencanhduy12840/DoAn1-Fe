@@ -26,7 +26,7 @@ import importTicketReducer from "./slice/importTicketSlice.ts";
 const userPersistConfig = {
   key: "user",
   storage,
-  whitelist: ["user", "isAuthenticated"],
+  whitelist: ["user", "isAuthenticated", "accessToken", "refreshToken"],
 };
 
 const persistedUserReducer = persistReducer(userPersistConfig, userReducer);
